@@ -32,8 +32,7 @@ distribution while the lower represent the dest position prob dist. Thats about 
 
 The general idea is fairly simple, I have a list of all boards the network has already classified a "best move" to, if the given board is in that list, I calculate
 the gradient assuming the position the list shows as best and add it to an accumulator, if it isnt, I pick a random legal move and add the board to the list with the random selected move as the "best move" and do the same process I would otherwise. Since Im treating each game as its own batch, after each game I divide the accumulator vector by the total moves and do a gradient descent step with those values (multiplied by the learning step). This process is then done 20 times. This is because I need a model different enough from the original to be able to properly run it against the original. The different boards are reached by having the mutated model play against the original one.
-After these 20 games, I will run 20 other games where I pitch the original model to this new mutated model, if the mutated model has a score above 0 (1 for a win, 0 for draw, 
--1 for loss), I then swap the old original model by this new mutated one, otherwise I simply discard the mutated model and repeat the process.
+After these 20 games, I will run 20 other games where I pitch the original model against this new mutated model, if the mutated model has a score above 0 (1 for a win, 0 for draw, -1 for loss), I then swap the old original model by this new mutated one, otherwise I simply discard the mutated model and repeat the process.
 If you want more details feel free to look through the code.
 
 All matrices are organized in col major to help with coalescense.
