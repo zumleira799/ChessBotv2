@@ -19,7 +19,7 @@ Thats about it, the list of defined piece types is given by:
 //where the whites are positive and blacks are negative
 """
 
-Obviously inputing a float that is not given will result in unpredicted behaiviour.
+Obviously inputing a float that is not given will result in unpredicted behaviour.
 
 I will now go over some of the technical details, and how you can manipulate some parameters if you want to try and find the optimal parameters yourself.
 
