@@ -3,7 +3,7 @@ A custom made neural network that plays chess
 
 To be able to run this program you need an nvidea gpu capable of dynamic parallelism. It is also not supported on windows because of the assembly script.
 
-This is (probably) the final version of a small project of mine. Put simply this project has the code to train and run a NN that plays chess, if you comment out the "runInputRun" function call you can even play against it yourself, however the scope of the playing mechanism is fairly limited, given how this project's purpose was to test a custom reinforcment learning algorithm I cooked up. If you want to play against it, here's how the input/output works:
+This is (probably) the final version of a small project of mine. Put simply this project has the code to train and run a NN that plays chess, if you uncomment the "runInputRun" function call you can even play against it yourself, however the scope of the playing mechanism is fairly limited, given how this project's purpose was to test a custom reinforcment learning algorithm I cooked up. If you want to play against it, here's how the input/output works:
 1-The bot only plays as whites, so it will always start first, it will output a source and destination, I hope what that means is self explainatory; This output will be of the
 format x=something y=something, x represents the x coordinate(so the letters, where a=0 and h=7) and y the y coordinate, keep in mind the y coordinate is 0-indexed, 
 so youll have to subtract 1 from the coordinate the real board shows.
