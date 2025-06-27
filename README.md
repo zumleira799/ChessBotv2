@@ -10,7 +10,7 @@ so youll have to subtract 1 from the coordinate the real board shows.
 
 2- After this you will be able to provide a move, This move is of the format "xSrc|ySrc xDst|yDst replacementFloat" I hope everything except the replacementFloat is self
 explainatory, the replacementFloat indicates if the piece is going to change value (e.g when a pawn reaches the other end of the board) and the new value of the piece,
-if replacementFloat is greater than 0, than no change to the piece type is made. Keep in mind the board is in the perspective of the white player.
+if replacementFloat is greater than 0, then no change to the piece type is made. Keep in mind the board is in the perspective of the white player.
 
 Thats about it, the list of defined piece types is given by:
 """
