@@ -1,3 +1,4 @@
 # Auto detect text files and perform LF normalization
 * text=auto
 neuralData/FNN filter=lfs diff=lfs merge=lfs -text
+neuralData/backup filter=lfs diff=lfs merge=lfs -text
