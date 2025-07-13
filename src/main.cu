@@ -9,6 +9,7 @@
 using namespace std;
 
 #define FNNpath "../neuralData/FNN"
+#define backupPath "../neuralData/backup"
 
 #define ReLUalpha 0.1
 #define randomNRuns 1
@@ -730,6 +731,7 @@ float runSelfPlay(float* NN, float* startingBoard, int* FNN, int fnnS, int neura
             tMovR++;
             //Move prediction setup     ------------------------------------------------
             strP = searchHash(realBoard, &bRec);
+
             if(strP){
                 int16_t srcP = (strP<<8)>>8;
                 int16_t dstP = strP>>8;
@@ -782,6 +784,9 @@ float runSelfPlay(float* NN, float* startingBoard, int* FNN, int fnnS, int neura
             cudaMemcpy(outputVector, realBoard, 64*sizeof(float), cudaMemcpyDefault);
             runFullNet(devModNN, outputVector, FNN, fnnS);
             calculateGradient(devModNN, outputVector, sgdPointer, thetaHolder, predictionVector, FNN, fnnS, sumF, neuralSize);
+            //if(strP){
+            //    VecCMult<<<((neuralSize-1)/1024)+1, 1024>>>(sgdPointer, sgdPointer, 0.05, neuralSize);
+            //}
             VecAdd<<<((neuralSize-1)/1024)+1, 1024>>>(sgdAccumulator, sgdPointer, sgdAccumulator, neuralSize);
 
             loopBack3:
@@ -1005,6 +1010,7 @@ void setupNN(float* gvBoard, float* NN, int* FNN, int fnnS){
             acm += pc;
         }
         writeF(NN, nSize, sizeof(float), FNNpath);
+        writeF(NN, nSize, sizeof(float), backupPath);
     }
 }
 
@@ -1170,6 +1176,6 @@ int main(int argc, char** argv){
     
     long dmv;
     float* network = (float*)readF(FNNpath, sizeof(float), &dmv);
-    runInputRun(chessBoard, network, FNN, sizeof(FNN)/sizeof(int));
-    //setupNN(chessBoard, network, FNN, sizeof(FNN)/sizeof(int));
+    //runInputRun(chessBoard, network, FNN, sizeof(FNN)/sizeof(int));
+    setupNN(chessBoard, network, FNN, sizeof(FNN)/sizeof(int));
 }
