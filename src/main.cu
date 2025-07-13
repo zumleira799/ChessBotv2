@@ -1176,6 +1176,6 @@ int main(int argc, char** argv){
     
     long dmv;
     float* network = (float*)readF(FNNpath, sizeof(float), &dmv);
-    //runInputRun(chessBoard, network, FNN, sizeof(FNN)/sizeof(int));
-    setupNN(chessBoard, network, FNN, sizeof(FNN)/sizeof(int));
+    runInputRun(chessBoard, network, FNN, sizeof(FNN)/sizeof(int));
+    //setupNN(chessBoard, network, FNN, sizeof(FNN)/sizeof(int));
 }
