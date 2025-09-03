@@ -38,7 +38,7 @@ __global__ void VecCMult(float* A, float* B, float c, int size){
     B[i] = A[i]*c;
 }
 
-__global__ void MatVecMultFusedAddAct(float* a, float* b, float* c, float* addV, int Arows, int AcBr){
+__global__ void MatVecMultFusedAddAct(float* a, float* b, float* c, float* addV, int Arows, int AcBr, char skAc = 1){
     int tx = threadIdx.x;
     int bx = blockIdx.x;
     int tileSize = blockDim.x;
