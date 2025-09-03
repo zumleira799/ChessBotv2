@@ -38,40 +38,49 @@ __global__ void VecCMult(float* A, float* B, float c, int size){
     B[i] = A[i]*c;
 }
 
-__global__ void MatVecMultFusedAddAct(float* a, float* b, float* c, float* addV, int Arows, int AcBr, char skAc = 1){
+__global__ void MatVecMultFusedAddAct(float* a, float* b, float* c, float* addV, int Arows, int AcBr){
     int tx = threadIdx.x;
     int bx = blockIdx.x;
     int tileSize = blockDim.x;
     int ctx = tileSize*bx + tx;
 
+    if((AcBr-(bx*tileSize)) < tileSize){
+        tileSize=(AcBr-(bx*tileSize));
+    }
+
     if(ctx >= Arows){
         return;
     }
 
-    __shared__ float B[maxCacheSize];
+    if(Arows < tileSize){
+        tileSize = Arows;
+    }
+
+    //printf("AcBr = %d\nTileSize = %d\n", AcBr, tileSize);
+
+    __shared__ float B[1024];
 
     float tempVal = 0;
     
     for(int i = 0; i < AcBr; i += tileSize){
         if(tx < tileSize && tx+i < AcBr){
-            B[tx] = b[tx + i];
+            B[tx] = b[tx+i];
         }
         else{
             B[tx] = 0.0;
         }
         __syncthreads();
 
-        for(int k = 0; k < tileSize; k++){
+        for(int k = 0; k < tileSize && k+i < AcBr; k++){
             tempVal += a[ctx + Arows*(k+i)]*B[k];
+            //printf("b[%d]=%f; B[%d]=%f\n", tx+i, b[tx+i], tx, B[tx]);
+            //printf("Iter: %d; locIter: %d\n", k+i, k);
         }
         __syncthreads();
     }
     
-    //for(int i = 0; i < AcBr; i++){
-    //    tempVal += a[ctx + Arows*i]*b[i];
-    //}
     tempVal += addV[ctx];
-    if(tempVal < 0 && skAc){
+    if(tempVal < 0){
         tempVal *= ReLUalpha;
     }
     //printf("%f\n", tempVal);
