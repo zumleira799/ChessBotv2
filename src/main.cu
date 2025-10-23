@@ -14,7 +14,7 @@ using namespace std;
 #define ReLUalpha 0.1
 #define randomNRuns 1
 #define maxMoves 230
-#define learningStep -0.01
+#define learningStep -0.05
 #define totGames 20
 #define costTH 2000.0
 #define FLT_MAX (1.0/0.0)
@@ -38,7 +38,7 @@ __global__ void VecCMult(float* A, float* B, float c, int size){
     B[i] = A[i]*c;
 }
 
-__global__ void MatVecMultFusedAddAct(float* a, float* b, float* c, float* addV, int Arows, int AcBr, char skAc = 1){
+__global__ void MatVecMultFusedAddAct(float* a, float* b, float* c, float* addV, int Arows, int AcBr){
     int tx = threadIdx.x;
     int bx = blockIdx.x;
     int tileSize = blockDim.x;
@@ -48,6 +48,10 @@ __global__ void MatVecMultFusedAddAct(float* a, float* b, float* c, float* addV,
         tileSize=(AcBr-(bx*tileSize));
     }
 
+    if(tx >= tileSize){
+        return;
+    }
+
     if(ctx >= Arows){
         return;
     }
@@ -55,8 +59,6 @@ __global__ void MatVecMultFusedAddAct(float* a, float* b, float* c, float* addV,
     if(Arows < tileSize){
         tileSize = Arows;
     }
-
-    //printf("AcBr = %d\nTileSize = %d\n", AcBr, tileSize);
 
     __shared__ float B[1024];
 
@@ -73,8 +75,6 @@ __global__ void MatVecMultFusedAddAct(float* a, float* b, float* c, float* addV,
 
         for(int k = 0; k < tileSize && k+i < AcBr; k++){
             tempVal += a[ctx + Arows*(k+i)]*B[k];
-            //printf("b[%d]=%f; B[%d]=%f\n", tx+i, b[tx+i], tx, B[tx]);
-            //printf("Iter: %d; locIter: %d\n", k+i, k);
         }
         __syncthreads();
     }
@@ -83,7 +83,6 @@ __global__ void MatVecMultFusedAddAct(float* a, float* b, float* c, float* addV,
     if(tempVal < 0){
         tempVal *= ReLUalpha;
     }
-    //printf("%f\n", tempVal);
     c[ctx] = tempVal;
 }
 
@@ -1185,6 +1184,6 @@ int main(int argc, char** argv){
     
     long dmv;
     float* network = (float*)readF(FNNpath, sizeof(float), &dmv);
-    runInputRun(chessBoard, network, FNN, sizeof(FNN)/sizeof(int));
-    //setupNN(chessBoard, network, FNN, sizeof(FNN)/sizeof(int));
+    //runInputRun(chessBoard, network, FNN, sizeof(FNN)/sizeof(int));
+    setupNN(chessBoard, network, FNN, sizeof(FNN)/sizeof(int));
 }
